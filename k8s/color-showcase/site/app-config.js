@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Ocean",
-  release: "v2.0",
-  accent: "#2dd4bf",
-  accentTwo: "#60a5fa",
-  accentThree: "#f97316",
-  headline: "A new commit is waiting to sync",
-  message: "The Git repository changed first. Argo CD can now show the exact diff before Kubernetes receives it.",
-  metricA: "4 pods",
-  metricB: "OutOfSync",
-  metricC: "ConfigMap rollout",
-  updatedAt: "2026-04-21T14:27:58Z"
+  themeName: "Ember",
+  release: "v3.0",
+  accent: "#fb7185",
+  accentTwo: "#f59e0b",
+  accentThree: "#38bdf8",
+  headline: "Sync turns desired state into live state",
+  message: "Click Sync in Argo CD and refresh this page to show the deployment converging from Git to Kubernetes.",
+  metricA: "2 pods",
+  metricB: "Sync pending",
+  metricC: "Rolling update",
+  updatedAt: "2026-04-21T14:34:14Z"
 };

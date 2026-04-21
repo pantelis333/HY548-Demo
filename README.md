@@ -60,6 +60,12 @@ Then open:
 - Argo CD: `https://localhost:8080`
 - Demo app: `http://localhost:8081`
 
+If you are opening the browser from Windows and `localhost` does not work, use the WSL IP printed by `./scripts/argocd-port-forward.sh`. You can also print it with:
+
+```bash
+hostname -I | awk '{print $1}'
+```
+
 The username is `admin`. The password is printed by `setup.sh` and `argocd-port-forward.sh`.
 
 The browser will warn about the Argo CD certificate because the local install uses a self-signed certificate. Continue through the warning for the demo.
