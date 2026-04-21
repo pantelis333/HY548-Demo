@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: color-showcase
     app.kubernetes.io/part-of: argocd-demo
 spec:
-  replicas: 4
+  replicas: 6
   selector:
     matchLabels:
       app.kubernetes.io/name: color-showcase

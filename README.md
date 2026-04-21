@@ -161,6 +161,16 @@ Make two theme changes and sync both:
 
 In Argo CD, open the app history and show that Argo CD knows which Git revisions were deployed.
 
+### 6. Show A Live Public GitHub Repo
+
+Deploy the official Argo CD example guestbook app directly from GitHub:
+
+```bash
+./scripts/add-live-repo-demo.sh
+```
+
+In Argo CD, you should now see a second app named `guestbook-live`. Use it to show that Argo CD can deploy from a real external Git repository, not only the local demo Git server.
+
 ## Useful Commands
 
 ```bash
@@ -263,6 +273,7 @@ scripts/setup.sh                     Full local setup
 scripts/argocd-port-forward.sh       Opens Argo CD UI access
 scripts/set-theme.sh                 Creates a visible Git change
 scripts/set-replicas.sh              Creates a scaling Git change
+scripts/add-live-repo-demo.sh        Adds the official public GitHub guestbook demo
 scripts/sync-app.sh                  Triggers Argo CD sync
 scripts/status.sh                    Shows current status
 scripts/teardown.sh                  Deletes local demo resources
