@@ -18,6 +18,7 @@ RUN_INITIAL_SYNC="${RUN_INITIAL_SYNC:-true}"
 ARGOCD_INSTALL_URL="${ARGOCD_INSTALL_URL:-https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml}"
 LOCAL_GIT_CONTAINER="${LOCAL_GIT_CONTAINER:-argocd-demo-git}"
 LOCAL_GIT_REPO_NAME="${LOCAL_GIT_REPO_NAME:-argocd-demo.git}"
+LOCAL_GIT_IMAGE="${LOCAL_GIT_IMAGE:-alpine/git:latest}"
 LOCAL_GIT_DIR="$PROJECT_ROOT/.demo/git"
 LOCAL_GIT_REPO="$LOCAL_GIT_DIR/$LOCAL_GIT_REPO_NAME"
 
@@ -97,7 +98,7 @@ reexec_with_docker_group() {
   local var_name
   for var_name in \
     CLUSTER_NAME ARGOCD_NAMESPACE APP_NAME HOST_APP_PORT KUBE_API_PORT TARGET_REVISION \
-    RUN_INITIAL_SYNC ARGOCD_INSTALL_URL LOCAL_GIT_CONTAINER LOCAL_GIT_REPO_NAME REPO_URL; do
+    RUN_INITIAL_SYNC ARGOCD_INSTALL_URL LOCAL_GIT_CONTAINER LOCAL_GIT_REPO_NAME LOCAL_GIT_IMAGE REPO_URL; do
     if [ -n "${!var_name+x}" ]; then
       env_command+=" $(printf '%q' "${var_name}=${!var_name}")"
     fi
@@ -176,8 +177,9 @@ start_local_git_server() {
   docker run -d \
     --name "$LOCAL_GIT_CONTAINER" \
     --network "k3d-$CLUSTER_NAME" \
-    -v "$LOCAL_GIT_DIR:/usr/share/nginx/html:ro" \
-    nginx:1.27-alpine >/dev/null
+    -v "$LOCAL_GIT_DIR:/git:ro" \
+    "$LOCAL_GIT_IMAGE" \
+    daemon --verbose --export-all --base-path=/git --reuseaddr /git >/dev/null
 
   local git_ip
   git_ip="$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$LOCAL_GIT_CONTAINER")"
@@ -191,9 +193,9 @@ metadata:
   namespace: ${ARGOCD_NAMESPACE}
 spec:
   ports:
-    - name: http
-      port: 80
-      targetPort: 80
+    - name: git
+      port: 9418
+      targetPort: 9418
 ---
 apiVersion: v1
 kind: Endpoints
@@ -204,8 +206,8 @@ subsets:
   - addresses:
       - ip: ${git_ip}
     ports:
-      - name: http
-        port: 80
+      - name: git
+        port: 9418
 YAML
 }
 
@@ -222,7 +224,7 @@ escape_sed_replacement() {
 }
 
 apply_argocd_application() {
-  local repo_url="${REPO_URL:-http://demo-git.${ARGOCD_NAMESPACE}.svc.cluster.local/${LOCAL_GIT_REPO_NAME}}"
+  local repo_url="${REPO_URL:-git://demo-git.${ARGOCD_NAMESPACE}.svc.cluster.local/${LOCAL_GIT_REPO_NAME}}"
   local escaped_repo_url
   local escaped_revision
   escaped_repo_url="$(escape_sed_replacement "$repo_url")"

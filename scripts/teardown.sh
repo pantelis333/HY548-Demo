@@ -15,5 +15,4 @@ if [ "$KEEP_DEMO_DATA" != "true" ]; then
   rm -rf "$PROJECT_ROOT/.demo"
 fi
 
-echo "Deleted k3d cluster ${CLUSTER_NAME} and local Git HTTP container."
-
+echo "Deleted k3d cluster ${CLUSTER_NAME} and local Git server container."

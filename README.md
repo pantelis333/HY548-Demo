@@ -8,7 +8,7 @@ Argo CD is a Kubernetes GitOps controller, so a real demo needs Kubernetes. Here
 
 - A local `k3d` Kubernetes cluster named `argocd-demo`.
 - Argo CD installed in the `argocd` namespace.
-- A local read-only Git HTTP server running as a Docker `nginx` container.
+- A local read-only Git server running as a Docker container.
 - An Argo CD `Application` named `color-showcase`.
 - A visual web app at `http://localhost:8081`.
 - Scripts for theme changes, scaling changes, syncs, status checks, and teardown.
@@ -20,7 +20,8 @@ You need these tools:
 - Docker Desktop or Docker Engine
 - Git
 - `kubectl`
-- `k3d`
+
+`./scripts/setup.sh` downloads `k3d` into `.demo/bin` automatically if it is not already installed.
 
 For WSL/Linux, the common install commands are:
 
