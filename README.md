@@ -8,7 +8,7 @@ Argo CD is a Kubernetes GitOps controller, so a real demo needs Kubernetes. Here
 
 - A local `k3d` Kubernetes cluster named `argocd-demo`.
 - Argo CD installed in the `argocd` namespace.
-- A local read-only Git server running as a Docker container.
+- A local read-only Git server running as a small Docker image built from `docker/git-server/Dockerfile`.
 - An Argo CD `Application` named `color-showcase`.
 - A visual web app at `http://localhost:8081`.
 - Scripts for theme changes, scaling changes, syncs, status checks, and teardown.
@@ -260,6 +260,7 @@ scripts/set-replicas.sh              Creates a scaling Git change
 scripts/sync-app.sh                  Triggers Argo CD sync
 scripts/status.sh                    Shows current status
 scripts/teardown.sh                  Deletes local demo resources
+docker/git-server/Dockerfile         Local Git daemon image used by Argo CD
 ```
 
 ## References

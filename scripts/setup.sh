@@ -18,7 +18,7 @@ RUN_INITIAL_SYNC="${RUN_INITIAL_SYNC:-true}"
 ARGOCD_INSTALL_URL="${ARGOCD_INSTALL_URL:-https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml}"
 LOCAL_GIT_CONTAINER="${LOCAL_GIT_CONTAINER:-argocd-demo-git}"
 LOCAL_GIT_REPO_NAME="${LOCAL_GIT_REPO_NAME:-argocd-demo.git}"
-LOCAL_GIT_IMAGE="${LOCAL_GIT_IMAGE:-alpine/git:latest}"
+LOCAL_GIT_IMAGE="${LOCAL_GIT_IMAGE:-argocd-demo-git-server:local}"
 LOCAL_GIT_DIR="$PROJECT_ROOT/.demo/git"
 LOCAL_GIT_REPO="$LOCAL_GIT_DIR/$LOCAL_GIT_REPO_NAME"
 
@@ -157,6 +157,19 @@ publish_local_git_repo() {
   git --git-dir="$LOCAL_GIT_REPO" update-server-info
 }
 
+ensure_local_git_server_image() {
+  if [ "$LOCAL_GIT_IMAGE" != "argocd-demo-git-server:local" ]; then
+    return 0
+  fi
+
+  if docker image inspect "$LOCAL_GIT_IMAGE" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "Building local Git daemon image: $LOCAL_GIT_IMAGE"
+  docker build -t "$LOCAL_GIT_IMAGE" -f "$PROJECT_ROOT/docker/git-server/Dockerfile" "$PROJECT_ROOT/docker/git-server" >/dev/null
+}
+
 create_cluster() {
   if k3d cluster list "$CLUSTER_NAME" >/dev/null 2>&1; then
     echo "Using existing k3d cluster: $CLUSTER_NAME"
@@ -173,16 +186,28 @@ create_cluster() {
 }
 
 start_local_git_server() {
+  ensure_local_git_server_image
+
   docker rm -f "$LOCAL_GIT_CONTAINER" >/dev/null 2>&1 || true
   docker run -d \
     --name "$LOCAL_GIT_CONTAINER" \
     --network "k3d-$CLUSTER_NAME" \
     -v "$LOCAL_GIT_DIR:/git:ro" \
-    "$LOCAL_GIT_IMAGE" \
-    daemon --verbose --export-all --base-path=/git --reuseaddr /git >/dev/null
+    "$LOCAL_GIT_IMAGE" >/dev/null
+
+  if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_GIT_CONTAINER"; then
+    echo "Local Git server container exited unexpectedly:" >&2
+    docker logs "$LOCAL_GIT_CONTAINER" >&2 || true
+    exit 1
+  fi
 
   local git_ip
   git_ip="$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$LOCAL_GIT_CONTAINER")"
+  if [ -z "$git_ip" ]; then
+    echo "Could not determine local Git server container IP." >&2
+    docker logs "$LOCAL_GIT_CONTAINER" >&2 || true
+    exit 1
+  fi
 
   kubectl create namespace "$ARGOCD_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
   cat <<YAML | kubectl apply -f - >/dev/null
