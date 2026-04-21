@@ -17,10 +17,11 @@ fi
 
 kubectl apply -f "$PROJECT_ROOT/argocd/applications/guestbook-live.yaml"
 
+kubectl -n "$ARGOCD_NAMESPACE" annotate application "$APP_NAME" argocd.argoproj.io/refresh=hard --overwrite >/dev/null
 kubectl -n "$ARGOCD_NAMESPACE" patch application "$APP_NAME" --type merge \
   -p '{"operation":{"sync":{"prune":true,"syncOptions":["CreateNamespace=true"]}}}' >/dev/null
 
-echo "Sync requested for ${APP_NAME} from https://github.com/argoproj/argocd-example-apps.git"
+echo "Sync requested for ${APP_NAME}. The local Kustomize overlay pulls upstream guestbook YAML from GitHub."
 
 for _ in $(seq 1 90); do
   sync_status="$(kubectl -n "$ARGOCD_NAMESPACE" get application "$APP_NAME" -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
