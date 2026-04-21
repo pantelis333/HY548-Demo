@@ -214,7 +214,7 @@ install_argocd() {
   echo "Installing Argo CD from: $ARGOCD_INSTALL_URL"
   kubectl apply -n "$ARGOCD_NAMESPACE" --server-side --force-conflicts -f "$ARGOCD_INSTALL_URL" >/dev/null
   kubectl -n "$ARGOCD_NAMESPACE" wait --for=condition=Available deployment --all --timeout=420s
-  kubectl -n "$ARGOCD_NAMESPACE" wait --for=condition=Ready pod -l app.kubernetes.io/part-of=argocd --timeout=420s
+  kubectl -n "$ARGOCD_NAMESPACE" rollout status statefulset/argocd-application-controller --timeout=420s
 }
 
 escape_sed_replacement() {
