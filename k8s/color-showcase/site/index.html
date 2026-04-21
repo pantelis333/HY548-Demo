@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Argo CD GitOps Demo</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app-config.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-label="GitOps deployment status">
+        <div class="hero-copy">
+          <p class="eyebrow">Argo CD demo application</p>
+          <h1 id="headline">Git is the source of truth</h1>
+          <p id="message" class="lede">
+            This page is served by nginx, configured by a Kustomize-generated ConfigMap, and deployed by Argo CD.
+          </p>
+          <div class="actions">
+            <span id="themeName" class="pill">Aurora</span>
+            <span id="release" class="pill muted">v1.0</span>
+          </div>
+        </div>
+
+        <div class="topology" aria-label="Deployment topology">
+          <div class="lane">
+            <span>Git</span>
+            <strong>Commit</strong>
+          </div>
+          <div class="arrow"></div>
+          <div class="lane active">
+            <span>Argo CD</span>
+            <strong>Sync</strong>
+          </div>
+          <div class="arrow"></div>
+          <div class="lane">
+            <span>Kubernetes</span>
+            <strong>Pods</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-grid" aria-label="Runtime details">
+        <article class="panel">
+          <span class="label">Desired state</span>
+          <strong id="metricA">2 pods</strong>
+          <p>Change replicas in Git and watch Argo CD replace the live state.</p>
+        </article>
+        <article class="panel">
+          <span class="label">Sync mode</span>
+          <strong id="metricB">Manual sync</strong>
+          <p>Publish a Git change, open the diff, then click Sync in the Argo CD UI.</p>
+        </article>
+        <article class="panel">
+          <span class="label">Renderer</span>
+          <strong id="metricC">Kustomize</strong>
+          <p>Kustomize hashes the ConfigMap, so content updates roll the nginx pods.</p>
+        </article>
+      </section>
+
+      <section class="timeline" aria-label="Demo storyline">
+        <div>
+          <span class="step">1</span>
+          <p>Make a Git change</p>
+        </div>
+        <div>
+          <span class="step">2</span>
+          <p>Argo CD detects drift</p>
+        </div>
+        <div>
+          <span class="step">3</span>
+          <p>Sync and watch Kubernetes converge</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const config = window.DEMO_CONFIG || {};
+      const root = document.documentElement;
+      const setText = (id, value) => {
+        if (value) {
+          document.getElementById(id).textContent = value;
+        }
+      };
+
+      root.style.setProperty("--accent", config.accent || "#ff4d8d");
+      root.style.setProperty("--accent-two", config.accentTwo || "#22d3ee");
+      root.style.setProperty("--accent-three", config.accentThree || "#facc15");
+      setText("headline", config.headline);
+      setText("message", config.message);
+      setText("themeName", config.themeName);
+      setText("release", config.release);
+      setText("metricA", config.metricA);
+      setText("metricB", config.metricB);
+      setText("metricC", config.metricC);
+    </script>
+  </body>
+</html>
+
