@@ -43,8 +43,10 @@ git --git-dir="$LOCAL_GIT_REPO" symbolic-ref HEAD "refs/heads/$TARGET_REVISION"
 git push --force "$LOCAL_GIT_REPO" "HEAD:refs/heads/$TARGET_REVISION" >/dev/null
 git --git-dir="$LOCAL_GIT_REPO" update-server-info
 
-if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_GIT_CONTAINER"; then
-  echo "Local Git server container is not running. Run ./scripts/setup.sh to recreate it." >&2
+if docker ps >/dev/null 2>&1; then
+  if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_GIT_CONTAINER"; then
+    echo "Local Git server container is not running. Run ./scripts/setup.sh to recreate it." >&2
+  fi
 fi
 
 if kubectl config get-contexts "k3d-$CLUSTER_NAME" >/dev/null 2>&1; then
