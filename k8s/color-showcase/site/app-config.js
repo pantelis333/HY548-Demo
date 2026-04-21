@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Ocean",
-  release: "v2.0",
-  accent: "#2dd4bf",
-  accentTwo: "#60a5fa",
-  accentThree: "#f97316",
-  headline: "A new commit is waiting to sync",
-  message: "The Git repository changed first. Argo CD can now show the exact diff before Kubernetes receives it.",
+  themeName: "Aurora",
+  release: "v1.0",
+  accent: "#ff4d8d",
+  accentTwo: "#22d3ee",
+  accentThree: "#facc15",
+  headline: "Git is the source of truth",
+  message: "This page is served by nginx, configured by a Kustomize-generated ConfigMap, and deployed by Argo CD.",
   metricA: "2 pods",
-  metricB: "OutOfSync",
-  metricC: "ConfigMap rollout",
-  updatedAt: "2026-04-21T13:40:46Z"
+  metricB: "Manual sync",
+  metricC: "Kustomize",
+  updatedAt: "2026-04-21T13:41:11Z"
 };
