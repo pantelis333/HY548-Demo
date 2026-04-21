@@ -162,11 +162,7 @@ ensure_local_git_server_image() {
     return 0
   fi
 
-  if docker image inspect "$LOCAL_GIT_IMAGE" >/dev/null 2>&1; then
-    return 0
-  fi
-
-  echo "Building local Git daemon image: $LOCAL_GIT_IMAGE"
+  echo "Ensuring local Git daemon image: $LOCAL_GIT_IMAGE"
   docker build -t "$LOCAL_GIT_IMAGE" -f "$PROJECT_ROOT/docker/git-server/Dockerfile" "$PROJECT_ROOT/docker/git-server" >/dev/null
 }
 
