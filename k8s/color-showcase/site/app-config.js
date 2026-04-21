@@ -6,7 +6,7 @@ window.DEMO_CONFIG = {
   accentThree: "#f97316",
   headline: "A new commit is waiting to sync",
   message: "The Git repository changed first. Argo CD can now show the exact diff before Kubernetes receives it.",
-  metricA: "2 pods",
+  metricA: "4 pods",
   metricB: "OutOfSync",
   metricC: "ConfigMap rollout",
   updatedAt: "2026-04-21T14:27:58Z"
