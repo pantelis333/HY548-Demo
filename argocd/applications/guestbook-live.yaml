@@ -7,10 +7,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: https://github.com/argoproj/argocd-example-apps.git
-    targetRevision: HEAD
-    path: guestbook
+  sources:
+    - repoURL: https://github.com/argoproj/argocd-example-apps.git
+      targetRevision: HEAD
+      path: guestbook
+    - repoURL: git://demo-git.argocd.svc.cluster.local/argocd-demo.git
+      targetRevision: main
+      path: k8s/guestbook-live-extras
   destination:
     server: https://kubernetes.default.svc
     namespace: guestbook-live
@@ -18,4 +21,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
   revisionHistoryLimit: 10
-

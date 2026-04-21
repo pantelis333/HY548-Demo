@@ -169,7 +169,7 @@ Deploy the official Argo CD example guestbook app directly from GitHub:
 ./scripts/add-live-repo-demo.sh
 ```
 
-In Argo CD, you should now see a second app named `guestbook-live`. Use it to show that Argo CD can deploy from a real external Git repository, not only the local demo Git server.
+In Argo CD, you should now see a second app named `guestbook-live`. It uses the official GitHub guestbook app plus a local extras source that scales the frontend and adds demo backend services, so the resource tree is more interesting to present.
 
 ## Useful Commands
 

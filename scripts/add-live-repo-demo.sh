@@ -9,7 +9,13 @@ if kubectl config get-contexts "k3d-$CLUSTER_NAME" >/dev/null 2>&1; then
   kubectl config use-context "k3d-$CLUSTER_NAME" >/dev/null
 fi
 
-kubectl apply -f "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/argocd/applications/guestbook-live.yaml"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ -x "$PROJECT_ROOT/scripts/publish-local-git.sh" ]; then
+  "$PROJECT_ROOT/scripts/publish-local-git.sh" "Update guestbook live demo" >/dev/null
+fi
+
+kubectl apply -f "$PROJECT_ROOT/argocd/applications/guestbook-live.yaml"
 
 kubectl -n "$ARGOCD_NAMESPACE" patch application "$APP_NAME" --type merge \
   -p '{"operation":{"sync":{"prune":true,"syncOptions":["CreateNamespace=true"]}}}' >/dev/null
@@ -32,4 +38,3 @@ done
 echo "Timed out waiting for ${APP_NAME} to become Synced and Healthy." >&2
 kubectl -n "$ARGOCD_NAMESPACE" get application "$APP_NAME" -o wide || true
 exit 1
-
