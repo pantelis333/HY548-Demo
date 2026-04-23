@@ -4,6 +4,9 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+LOCAL_BIN="$PROJECT_ROOT/.demo/bin"
+export PATH="$LOCAL_BIN:$PATH"
+
 CLUSTER_NAME="${CLUSTER_NAME:-argocd-demo}"
 LOCAL_GIT_CONTAINER="${LOCAL_GIT_CONTAINER:-argocd-demo-git}"
 KEEP_DEMO_DATA="${KEEP_DEMO_DATA:-false}"
