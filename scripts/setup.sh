@@ -15,6 +15,7 @@ HOST_APP_PORT="${HOST_APP_PORT:-8081}"
 KUBE_API_PORT="${KUBE_API_PORT:-6550}"
 TARGET_REVISION="${TARGET_REVISION:-main}"
 RUN_INITIAL_SYNC="${RUN_INITIAL_SYNC:-true}"
+ARGOCD_ROLLOUT_TIMEOUT="${ARGOCD_ROLLOUT_TIMEOUT:-900s}"
 ARGOCD_INSTALL_URL="${ARGOCD_INSTALL_URL:-https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml}"
 LOCAL_GIT_CONTAINER="${LOCAL_GIT_CONTAINER:-argocd-demo-git}"
 LOCAL_GIT_REPO_NAME="${LOCAL_GIT_REPO_NAME:-argocd-demo.git}"
@@ -236,8 +237,8 @@ install_argocd() {
   kubectl create namespace "$ARGOCD_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
   echo "Installing Argo CD from: $ARGOCD_INSTALL_URL"
   kubectl apply -n "$ARGOCD_NAMESPACE" --server-side --force-conflicts -f "$ARGOCD_INSTALL_URL" >/dev/null
-  kubectl -n "$ARGOCD_NAMESPACE" wait --for=condition=Available deployment --all --timeout=420s
-  kubectl -n "$ARGOCD_NAMESPACE" rollout status statefulset/argocd-application-controller --timeout=420s
+  kubectl -n "$ARGOCD_NAMESPACE" wait --for=condition=Available deployment --all --timeout="$ARGOCD_ROLLOUT_TIMEOUT"
+  kubectl -n "$ARGOCD_NAMESPACE" rollout status statefulset/argocd-application-controller --timeout="$ARGOCD_ROLLOUT_TIMEOUT"
 }
 
 escape_sed_replacement() {
