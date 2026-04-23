@@ -1,4 +1,2 @@
 .demo/
-.kube/
-*.log
-
+.codex
