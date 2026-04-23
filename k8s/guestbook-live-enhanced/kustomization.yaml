@@ -5,6 +5,7 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argocd-example-apps/master/guestbook/guestbook-ui-deployment.yaml
   - https://raw.githubusercontent.com/argoproj/argocd-example-apps/master/guestbook/guestbook-ui-svc.yaml
   - demo-servers.yaml
+  - redis.yaml
 
 patches:
   - target:

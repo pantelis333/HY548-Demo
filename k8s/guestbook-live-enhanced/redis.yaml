@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis-leader
+    app.kubernetes.io/part-of: guestbook-live
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-leader
+  template:
+    metadata:
+      labels:
+        app: redis-leader
+        app.kubernetes.io/part-of: guestbook-live
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-leader
+  labels:
+    app: redis-leader
+    app.kubernetes.io/part-of: guestbook-live
+spec:
+  selector:
+    app: redis-leader
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-follower
+  labels:
+    app: redis-follower
+    app.kubernetes.io/part-of: guestbook-live
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis-follower
+  template:
+    metadata:
+      labels:
+        app: redis-follower
+        app.kubernetes.io/part-of: guestbook-live
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args:
+            - redis-server
+            - --replicaof
+            - redis-leader
+            - "6379"
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-follower
+  labels:
+    app: redis-follower
+    app.kubernetes.io/part-of: guestbook-live
+spec:
+  selector:
+    app: redis-follower
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
