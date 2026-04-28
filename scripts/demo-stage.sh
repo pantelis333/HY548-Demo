@@ -154,6 +154,41 @@ sync_app_if_available() {
   fi
 }
 
+wait_app_rollout() {
+  local app="$1"
+  local namespace=""
+  local deployments=()
+  local deployment=""
+
+  if [ "$SYNC" != "true" ]; then
+    return 0
+  fi
+
+  case "$app" in
+    color-showcase)
+      namespace="color-showcase"
+      deployments=(color-showcase)
+      ;;
+    guestbook-live)
+      namespace="guestbook-live"
+      deployments=(guestbook-ui guestbook-api guestbook-cache redis-follower redis-leader)
+      ;;
+    github-source-demo)
+      namespace="github-source-demo"
+      deployments=(github-source-demo repo-webhook commit-renderer sync-auditor)
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+
+  for deployment in "${deployments[@]}"; do
+    if kubectl -n "$namespace" get deployment "$deployment" >/dev/null 2>&1; then
+      kubectl -n "$namespace" rollout status "deployment/$deployment" --timeout=120s
+    fi
+  done
+}
+
 wait_for_port() {
   local port="$1"
 
@@ -233,6 +268,9 @@ publish_and_sync() {
   done
   for app in "${apps[@]}"; do
     sync_app_if_available "$app"
+  done
+  for app in "${apps[@]}"; do
+    wait_app_rollout "$app"
   done
   for app in "${apps[@]}"; do
     restart_port_forward_if_managed "$app"
