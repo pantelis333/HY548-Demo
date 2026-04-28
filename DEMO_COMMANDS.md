@@ -17,6 +17,10 @@ make status
 ```
 
 ```bash
+make check-urls
+```
+
+```bash
 make stop
 ```
 
@@ -45,11 +49,19 @@ kubectl config use-context k3d-argocd-demo
 ```
 
 ```bash
-setsid bash -c 'tail -f /dev/null | ./scripts/argocd-port-forward.sh > .demo/argocd-port-forward.log 2>&1' & echo $! > .demo/argocd-port-forward.pid
+setsid bash -lc 'exec ./scripts/argocd-port-forward.sh' > .demo/argocd-port-forward.log 2>&1 & echo $! > .demo/argocd-port-forward.pid
 ```
 
 ```bash
-setsid bash -c 'tail -f /dev/null | kubectl -n guestbook-live port-forward --address 0.0.0.0 svc/guestbook-ui 8082:80 > .demo/guestbook-port-forward.log 2>&1' & echo $! > .demo/guestbook-port-forward.pid
+setsid bash -lc 'exec kubectl -n color-showcase port-forward --address 0.0.0.0 svc/color-showcase 8081:80' > .demo/color-port-forward.log 2>&1 & echo $! > .demo/color-port-forward.pid
+```
+
+```bash
+setsid bash -lc 'exec kubectl -n guestbook-live port-forward --address 0.0.0.0 svc/guestbook-ui 8082:80' > .demo/guestbook-port-forward.log 2>&1 & echo $! > .demo/guestbook-port-forward.pid
+```
+
+```bash
+for port in 8080 8081 8082; do for i in $(seq 1 30); do (: >/dev/tcp/127.0.0.1/$port) >/dev/null 2>&1 && break; sleep 1; if [ "$i" = 30 ]; then echo "Timed out waiting for port $port"; exit 1; fi; done; done
 ```
 
 Check status:
@@ -64,6 +76,12 @@ kubectl -n color-showcase get deploy,pod
 
 ```bash
 kubectl -n guestbook-live get deploy,pod
+```
+
+Check URLs:
+
+```bash
+make check-urls
 ```
 
 Open:
@@ -143,7 +161,7 @@ cd /mnt/c/Users/pante/Desktop/HY548_ARGOCD_PROJCECT
 ```
 
 ```bash
-for f in .demo/argocd-port-forward.pid .demo/guestbook-port-forward.pid; do [ -f "$f" ] && kill -- "-$(cat "$f")" 2>/dev/null || true; done
+for f in .demo/argocd-port-forward.pid .demo/color-port-forward.pid .demo/guestbook-port-forward.pid; do if [ -f "$f" ]; then pid="$(cat "$f")"; kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true; rm -f "$f"; fi; done
 ```
 
 ```bash
