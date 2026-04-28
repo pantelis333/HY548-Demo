@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: color-showcase
   namespace: argocd
+  labels:
+    demo.repo: HY548-Demo
+    demo.source: GitHub
+    demo.stage: stage0-demo1-demo2-demo3
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -18,4 +22,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
   revisionHistoryLimit: 10
-
