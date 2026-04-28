@@ -13,6 +13,7 @@ LOCAL_GIT_REPO_NAME="${LOCAL_GIT_REPO_NAME:-argocd-demo.git}"
 LOCAL_GIT_DIR="$PROJECT_ROOT/.demo/git"
 LOCAL_GIT_REPO="$LOCAL_GIT_DIR/$LOCAL_GIT_REPO_NAME"
 COMMIT_MESSAGE="${1:-Update demo source}"
+ORIGIN_REMOTE="${ORIGIN_REMOTE:-origin}"
 
 if [ ! -d .git ]; then
   echo "No .git directory found. Run ./scripts/setup.sh first." >&2
@@ -43,6 +44,10 @@ git --git-dir="$LOCAL_GIT_REPO" symbolic-ref HEAD "refs/heads/$TARGET_REVISION"
 git push --force "$LOCAL_GIT_REPO" "HEAD:refs/heads/$TARGET_REVISION" >/dev/null
 git --git-dir="$LOCAL_GIT_REPO" update-server-info
 
+if git remote get-url "$ORIGIN_REMOTE" >/dev/null 2>&1; then
+  git push --force "$ORIGIN_REMOTE" "HEAD:refs/heads/$TARGET_REVISION" >/dev/null
+fi
+
 if docker ps >/dev/null 2>&1; then
   if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_GIT_CONTAINER"; then
     echo "Local Git server container is not running. Run ./scripts/setup.sh to recreate it." >&2
@@ -55,8 +60,8 @@ fi
 
 if kubectl -n "$ARGOCD_NAMESPACE" get application "$APP_NAME" >/dev/null 2>&1; then
   kubectl -n "$ARGOCD_NAMESPACE" annotate application "$APP_NAME" argocd.argoproj.io/refresh=hard --overwrite >/dev/null
-  echo "Published local Git repo and requested an Argo CD hard refresh."
+  echo "Published Git changes and requested an Argo CD hard refresh."
   echo "Open Argo CD to review the diff, then run ./scripts/sync-app.sh or click Sync in the UI."
 else
-  echo "Published local Git repo. Argo CD application was not found yet."
+  echo "Published Git changes. Argo CD application was not found yet."
 fi

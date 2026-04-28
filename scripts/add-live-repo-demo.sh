@@ -4,6 +4,7 @@ set -euo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-argocd-demo}"
 ARGOCD_NAMESPACE="${ARGOCD_NAMESPACE:-argocd}"
 APP_NAME="${APP_NAME:-guestbook-live}"
+TARGET_REVISION="${TARGET_REVISION:-main}"
 
 if kubectl config get-contexts "k3d-$CLUSTER_NAME" >/dev/null 2>&1; then
   kubectl config use-context "k3d-$CLUSTER_NAME" >/dev/null
@@ -11,11 +12,44 @@ fi
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+escape_sed_replacement() {
+  printf '%s' "$1" | sed -e 's/[\/&|]/\\&/g'
+}
+
+resolve_repo_url() {
+  if [ -n "${REPO_URL:-}" ]; then
+    printf '%s\n' "$REPO_URL"
+    return 0
+  fi
+
+  if git remote get-url origin >/dev/null 2>&1; then
+    git remote get-url origin
+    return 0
+  fi
+
+  printf 'git://demo-git.%s.svc.cluster.local/argocd-demo.git\n' "$ARGOCD_NAMESPACE"
+}
+
+apply_application() {
+  local repo_url
+  local escaped_repo_url
+  local escaped_revision
+
+  repo_url="$(resolve_repo_url)"
+  escaped_repo_url="$(escape_sed_replacement "$repo_url")"
+  escaped_revision="$(escape_sed_replacement "$TARGET_REVISION")"
+
+  sed \
+    -e "s|__REPO_URL__|${escaped_repo_url}|g" \
+    -e "s|__TARGET_REVISION__|${escaped_revision}|g" \
+    "$PROJECT_ROOT/argocd/applications/guestbook-live.template.yaml" | kubectl apply -f -
+}
+
 if [ -x "$PROJECT_ROOT/scripts/publish-local-git.sh" ]; then
   "$PROJECT_ROOT/scripts/publish-local-git.sh" "Update guestbook live demo" >/dev/null
 fi
 
-kubectl apply -f "$PROJECT_ROOT/argocd/applications/guestbook-live.yaml"
+apply_application
 
 kubectl -n "$ARGOCD_NAMESPACE" annotate application "$APP_NAME" argocd.argoproj.io/refresh=hard --overwrite >/dev/null
 kubectl -n "$ARGOCD_NAMESPACE" patch application "$APP_NAME" --type merge \

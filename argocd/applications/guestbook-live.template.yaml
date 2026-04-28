@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook-live
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: __REPO_URL__
+    targetRevision: __TARGET_REVISION__
+    path: k8s/guestbook-live-enhanced
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook-live
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 10
