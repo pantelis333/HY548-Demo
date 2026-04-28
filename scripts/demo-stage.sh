@@ -42,8 +42,35 @@ window.DEMO_CONFIG = {
 JS
 }
 
+write_source_config() {
+  local stage="$1"
+  local headline="$2"
+  local message="$3"
+  local change="$4"
+  local accent="$5"
+  local accent_two="$6"
+
+  cat > "$PROJECT_ROOT/k8s/github-source-demo/site/app-config.js" <<JS
+window.SOURCE_DEMO_CONFIG = {
+  stage: "${stage}",
+  headline: "${headline}",
+  message: "${message}",
+  repo: "github.com/pantelis333/HY548-Demo",
+  branch: "main",
+  appName: "github-source-demo",
+  change: "${change}",
+  accent: "${accent}",
+  accentTwo: "${accent_two}"
+};
+JS
+}
+
 set_color_replicas() {
   sed -i -E "s/replicas: [0-9]+/replicas: $1/" "$PROJECT_ROOT/k8s/color-showcase/deployment.yaml"
+}
+
+set_source_replicas() {
+  sed -i -E "s/replicas: [0-9]+/replicas: $1/" "$PROJECT_ROOT/k8s/github-source-demo/deployment.yaml"
 }
 
 set_guestbook_ui_replicas() {
@@ -84,8 +111,10 @@ publish_and_sync() {
   APP_NAME=color-showcase "$PROJECT_ROOT/scripts/publish-local-git.sh" "$message"
   request_refresh color-showcase
   request_refresh guestbook-live
+  request_refresh github-source-demo
   sync_app_if_available color-showcase
   sync_app_if_available guestbook-live
+  sync_app_if_available github-source-demo
 
   echo
   echo "GitHub commit: $(git rev-parse --short HEAD) ${message}"
@@ -100,6 +129,7 @@ fi
 case "$STAGE" in
   stage0)
     set_color_replicas 2
+    set_source_replicas 1
     set_guestbook_ui_replicas 2
     set_named_replicas guestbook-api 1 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
     set_named_replicas guestbook-cache 1 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
@@ -116,10 +146,18 @@ case "$STAGE" in
       "2 guestbook UI" \
       "GitHub main" \
       "stage0"
+    write_source_config \
+      "Stage 0" \
+      "HY548-Demo on GitHub" \
+      "This third Argo CD application makes the GitHub source visible as its own tile next to color-showcase and guestbook-live." \
+      "baseline" \
+      "#22d3ee" \
+      "#facc15"
     publish_and_sync "Stage 0 baseline"
     ;;
   demo1)
     set_color_replicas 5
+    set_source_replicas 1
     set_guestbook_ui_replicas 2
     set_named_replicas guestbook-api 1 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
     set_named_replicas guestbook-cache 1 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
@@ -136,10 +174,18 @@ case "$STAGE" in
       "Argo synced" \
       "Replica rollout" \
       "demo1"
+    write_source_config \
+      "Demo 1" \
+      "GitHub commit scaled color-showcase" \
+      "The new GitHub commit changed the desired replicas and page config. Argo CD pulled that commit and synced Kubernetes." \
+      "color-showcase replicas 2 -> 5" \
+      "#2dd4bf" \
+      "#f97316"
     publish_and_sync "Demo 1 scale color-showcase"
     ;;
   demo2)
     set_color_replicas 3
+    set_source_replicas 2
     set_guestbook_ui_replicas 8
     set_named_replicas guestbook-api 3 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
     set_named_replicas guestbook-cache 3 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
@@ -156,10 +202,18 @@ case "$STAGE" in
       "3 API + 3 cache" \
       "3 Redis followers" \
       "demo2"
+    write_source_config \
+      "Demo 2" \
+      "One repo drives several Kubernetes apps" \
+      "This commit expands the guestbook topology and also rolls this source tile, so the Argo CD view has three synced applications from the same repo." \
+      "guestbook topology expanded" \
+      "#a78bfa" \
+      "#34d399"
     publish_and_sync "Demo 2 scale guestbook topology"
     ;;
   demo3)
     set_color_replicas 4
+    set_source_replicas 3
     set_guestbook_ui_replicas 6
     set_named_replicas guestbook-api 2 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
     set_named_replicas guestbook-cache 2 "$PROJECT_ROOT/k8s/guestbook-live-enhanced/demo-servers.yaml"
@@ -176,6 +230,13 @@ case "$STAGE" in
       "6 guestbook UI" \
       "Release commit" \
       "demo3"
+    write_source_config \
+      "Demo 3" \
+      "Release commit is live from HY548-Demo" \
+      "The final commit leaves three Argo CD applications synced from GitHub: the source tile, the color app, and the guestbook topology." \
+      "release-ready commit" \
+      "#e5e7eb" \
+      "#22c55e"
     publish_and_sync "Demo 3 release-ready state"
     ;;
   *)

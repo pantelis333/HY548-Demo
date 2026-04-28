@@ -59,9 +59,11 @@ ARGO_REPO_URL="$(normalize_repo_url_for_argocd "$REPO_URL_INPUT")"
 
 apply_template "$PROJECT_ROOT/argocd/applications/color-showcase.template.yaml" "$ARGO_REPO_URL"
 apply_template "$PROJECT_ROOT/argocd/applications/guestbook-live.template.yaml" "$ARGO_REPO_URL"
+apply_template "$PROJECT_ROOT/argocd/applications/github-source-demo.template.yaml" "$ARGO_REPO_URL"
 
 kubectl -n "$ARGOCD_NAMESPACE" annotate application color-showcase argocd.argoproj.io/refresh=hard --overwrite >/dev/null
 kubectl -n "$ARGOCD_NAMESPACE" annotate application guestbook-live argocd.argoproj.io/refresh=hard --overwrite >/dev/null
+kubectl -n "$ARGOCD_NAMESPACE" annotate application github-source-demo argocd.argoproj.io/refresh=hard --overwrite >/dev/null
 
 echo "Updated Argo CD applications to use:"
 echo "  ${ARGO_REPO_URL}"

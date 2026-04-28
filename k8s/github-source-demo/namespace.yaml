@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: github-source-demo
+  labels:
+    app.kubernetes.io/name: github-source-demo
+    app.kubernetes.io/part-of: argocd-demo

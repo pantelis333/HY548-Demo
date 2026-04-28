@@ -25,7 +25,7 @@ make check-urls
 make stop
 ```
 
-`make stop` pushes and syncs `stage0` before it shuts the demo down. That leaves the repo and pods ready for the same demo flow next time. GitHub history still shows the previous demo commits, but the latest `main` commit is reset to `stage0`.
+`make stop` pushes and syncs `stage0` before it shuts the demo down. That leaves the repo, the three Argo CD app tiles, and the pods ready for the same demo flow next time. GitHub history still shows the previous demo commits, but the latest `main` commit is reset to `stage0`.
 
 ## Turn On
 
@@ -64,7 +64,11 @@ setsid bash -lc 'exec kubectl -n guestbook-live port-forward --address 0.0.0.0 s
 ```
 
 ```bash
-for port in 8080 8081 8082; do for i in $(seq 1 30); do (: >/dev/tcp/127.0.0.1/$port) >/dev/null 2>&1 && break; sleep 1; if [ "$i" = 30 ]; then echo "Timed out waiting for port $port"; exit 1; fi; done; done
+setsid bash -lc 'exec kubectl -n github-source-demo port-forward --address 0.0.0.0 svc/github-source-demo 8083:80' > .demo/github-source-port-forward.log 2>&1 & echo $! > .demo/github-source-port-forward.pid
+```
+
+```bash
+for port in 8080 8081 8082 8083; do for i in $(seq 1 30); do (: >/dev/tcp/127.0.0.1/$port) >/dev/null 2>&1 && break; sleep 1; if [ "$i" = 30 ]; then echo "Timed out waiting for port $port"; exit 1; fi; done; done
 ```
 
 Check status:
@@ -81,6 +85,10 @@ kubectl -n color-showcase get deploy,pod
 kubectl -n guestbook-live get deploy,pod
 ```
 
+```bash
+kubectl -n github-source-demo get deploy,pod
+```
+
 Check URLs:
 
 ```bash
@@ -92,6 +100,7 @@ Open:
 - Argo CD: `https://localhost:8080`
 - Color showcase: `http://localhost:8081`
 - Guestbook: `http://localhost:8082`
+- GitHub source demo: `http://localhost:8083`
 
 Argo CD password:
 
@@ -115,19 +124,19 @@ Demo 1 scales the color-showcase app and changes the page copy:
 make demo1
 ```
 
-Demo 2 expands the guestbook topology so Argo CD shows more pods:
+Demo 2 expands the guestbook topology so Argo CD shows more pods and updates the GitHub source tile:
 
 ```bash
 make demo2
 ```
 
-Demo 3 creates the final release-style commit:
+Demo 3 creates the final release-style commit across all three app tiles:
 
 ```bash
 make demo3
 ```
 
-Each demo command pushes a GitHub commit, syncs Argo CD, and prints the commit hash. Refresh `http://localhost:8081` after each one.
+Each demo command pushes a GitHub commit, syncs Argo CD, and prints the commit hash. Refresh `http://localhost:8081` and `http://localhost:8083` after each one.
 
 ## Extra Demo Commands
 
@@ -196,7 +205,7 @@ cd /mnt/c/Users/pante/Desktop/HY548_ARGOCD_PROJCECT
 ```
 
 ```bash
-for f in .demo/argocd-port-forward.pid .demo/color-port-forward.pid .demo/guestbook-port-forward.pid; do if [ -f "$f" ]; then pid="$(cat "$f")"; kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true; rm -f "$f"; fi; done
+for f in .demo/argocd-port-forward.pid .demo/color-port-forward.pid .demo/guestbook-port-forward.pid .demo/github-source-port-forward.pid; do if [ -f "$f" ]; then pid="$(cat "$f")"; kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true; rm -f "$f"; fi; done
 ```
 
 ```bash

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: github-source-demo
+  labels:
+    app.kubernetes.io/name: github-source-demo
+    app.kubernetes.io/part-of: argocd-demo
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: github-source-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HY548-Demo GitHub Source</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app-config.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-label="GitHub source status">
+        <p id="stage" class="eyebrow">Stage 0</p>
+        <h1 id="headline">HY548-Demo on GitHub</h1>
+        <p id="message" class="lede">
+          This Argo CD application exists only to make the GitHub source visible as its own tile.
+        </p>
+        <div class="repo-panel">
+          <span>Repository</span>
+          <strong id="repo">github.com/pantelis333/HY548-Demo</strong>
+        </div>
+      </section>
+
+      <section class="facts" aria-label="GitOps facts">
+        <article>
+          <span>Branch</span>
+          <strong id="branch">main</strong>
+        </article>
+        <article>
+          <span>Argo app</span>
+          <strong id="appName">github-source-demo</strong>
+        </article>
+        <article>
+          <span>What changed</span>
+          <strong id="change">baseline</strong>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const config = window.SOURCE_DEMO_CONFIG || {};
+      const setText = (id, value) => {
+        if (value) {
+          document.getElementById(id).textContent = value;
+        }
+      };
+
+      document.documentElement.style.setProperty("--accent", config.accent || "#22d3ee");
+      document.documentElement.style.setProperty("--accent-two", config.accentTwo || "#facc15");
+      setText("stage", config.stage);
+      setText("headline", config.headline);
+      setText("message", config.message);
+      setText("repo", config.repo);
+      setText("branch", config.branch);
+      setText("appName", config.appName);
+      setText("change", config.change);
+    </script>
+  </body>
+</html>

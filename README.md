@@ -9,8 +9,8 @@ Argo CD is a Kubernetes GitOps controller, so a real demo needs Kubernetes. Here
 - A local `k3d` Kubernetes cluster named `argocd-demo`.
 - Argo CD installed in the `argocd` namespace.
 - A local read-only Git server running as a small Docker image built from `docker/git-server/Dockerfile`.
-- An Argo CD `Application` named `color-showcase`.
-- A visual web app at `http://localhost:8081`.
+- Argo CD `Application` tiles named `color-showcase`, `guestbook-live`, and `github-source-demo`.
+- Visual web apps at `http://localhost:8081`, `http://localhost:8082`, and `http://localhost:8083`.
 - Scripts for theme changes, scaling changes, syncs, status checks, and teardown.
 
 ## Prerequisites
@@ -91,8 +91,14 @@ GitHub history still contains the demo commits, but the latest `main` commit ret
 Each numbered demo pushes a GitHub commit, syncs Argo CD, and changes something visible:
 
 - `make demo1`: scales `color-showcase` and changes the page.
-- `make demo2`: scales the guestbook UI/API/cache/Redis topology.
-- `make demo3`: applies a final release-style page and balanced pod counts.
+- `make demo2`: scales the guestbook UI/API/cache/Redis topology and updates the GitHub source tile.
+- `make demo3`: applies a final release-style page and balanced pod counts across all three Argo CD app tiles.
+
+The Argo CD app list should show:
+
+- `color-showcase`
+- `guestbook-live`
+- `github-source-demo`
 
 ### 1. Show GitOps From Zero
 
@@ -237,7 +243,9 @@ REPO_URL=https://github.com/<your-user>/<your-repo>.git TARGET_REVISION=master .
 Defaults:
 
 - Argo CD UI port-forward: `https://localhost:8080`
-- Demo app: `http://localhost:8081`
+- Color showcase: `http://localhost:8081`
+- Guestbook: `http://localhost:8082`
+- GitHub source demo: `http://localhost:8083`
 - k3d cluster: `argocd-demo`
 - Kubernetes API port: `6550`
 
