@@ -6,7 +6,7 @@ metadata:
     app: guestbook-api
     app.kubernetes.io/part-of: guestbook-live
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: guestbook-api
@@ -44,7 +44,7 @@ metadata:
     app: guestbook-cache
     app.kubernetes.io/part-of: guestbook-live
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: guestbook-cache
