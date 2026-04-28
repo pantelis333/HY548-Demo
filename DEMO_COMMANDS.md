@@ -118,25 +118,25 @@ Start from the baseline again:
 make stage0
 ```
 
-Demo 1 scales the color-showcase app and changes the page copy:
+Demo 1 is dedicated to `color-showcase`. It scales that app and changes the page copy:
 
 ```bash
 make demo1
 ```
 
-Demo 2 expands the guestbook topology so Argo CD shows more pods and updates the GitHub source tile:
+Demo 2 is dedicated to `guestbook-live`. It expands the guestbook topology so Argo CD shows more pods:
 
 ```bash
 make demo2
 ```
 
-Demo 3 creates the final release-style commit across all three app tiles:
+Demo 3 is dedicated to `github-source-demo`. It expands the source-flow page and adds extra Kubernetes resources so the Argo CD graph becomes more detailed:
 
 ```bash
 make demo3
 ```
 
-Each demo command pushes a GitHub commit, syncs Argo CD, and prints the commit hash. Refresh `http://localhost:8081` and `http://localhost:8083` after each one.
+Each demo command pushes a GitHub commit, syncs the dedicated Argo CD app, and prints the commit hash. Refresh the matching page after each one: `8081` for demo1, Argo CD's guestbook tree for demo2, and `8083` for demo3.
 
 ## Extra Demo Commands
 

@@ -90,9 +90,9 @@ GitHub history still contains the demo commits, but the latest `main` commit ret
 
 Each numbered demo pushes a GitHub commit, syncs Argo CD, and changes something visible:
 
-- `make demo1`: scales `color-showcase` and changes the page.
-- `make demo2`: scales the guestbook UI/API/cache/Redis topology and updates the GitHub source tile.
-- `make demo3`: applies a final release-style page and balanced pod counts across all three Argo CD app tiles.
+- `make demo1`: dedicated to `color-showcase`; scales that app and changes the page.
+- `make demo2`: dedicated to `guestbook-live`; scales the guestbook UI/API/cache/Redis topology.
+- `make demo3`: dedicated to `github-source-demo`; expands the source-flow page and adds extra Kubernetes resources so the Argo CD graph is more detailed.
 
 The Argo CD app list should show:
 

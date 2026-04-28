@@ -10,14 +10,20 @@
   <body>
     <main class="shell">
       <section class="hero" aria-label="GitHub source status">
-        <p id="stage" class="eyebrow">Stage 0</p>
-        <h1 id="headline">HY548-Demo on GitHub</h1>
-        <p id="message" class="lede">
-          This Argo CD application exists only to make the GitHub source visible as its own tile.
-        </p>
-        <div class="repo-panel">
-          <span>Repository</span>
-          <strong id="repo">github.com/pantelis333/HY548-Demo</strong>
+        <div class="hero-copy">
+          <p id="stage" class="eyebrow">Stage 0</p>
+          <h1 id="headline">HY548-Demo on GitHub</h1>
+          <p id="message" class="lede">
+            This Argo CD application exists only to make the GitHub source visible as its own tile.
+          </p>
+          <div class="repo-panel">
+            <span>Repository</span>
+            <strong id="repo">github.com/pantelis333/HY548-Demo</strong>
+          </div>
+        </div>
+
+        <div class="flow-shell" aria-label="GitOps flow">
+          <div id="flow" class="flow"></div>
         </div>
       </section>
 
@@ -39,10 +45,34 @@
 
     <script>
       const config = window.SOURCE_DEMO_CONFIG || {};
+      const defaultSteps = [
+        { label: "GitHub", value: "HY548-Demo" },
+        { label: "Argo CD", value: "Application" },
+        { label: "Kubernetes", value: "1 pod" }
+      ];
       const setText = (id, value) => {
         if (value) {
           document.getElementById(id).textContent = value;
         }
+      };
+      const renderFlow = () => {
+        const steps = config.steps || defaultSteps;
+        const flow = document.getElementById("flow");
+        flow.className = `flow ${config.mode || "baseline"}`;
+        flow.innerHTML = "";
+
+        steps.forEach((step, index) => {
+          const node = document.createElement("article");
+          node.className = "flow-node";
+          node.innerHTML = `<span>${step.label}</span><strong>${step.value}</strong><small>${step.note || ""}</small>`;
+          flow.appendChild(node);
+
+          if (index < steps.length - 1) {
+            const arrow = document.createElement("div");
+            arrow.className = "flow-arrow";
+            flow.appendChild(arrow);
+          }
+        });
       };
 
       document.documentElement.style.setProperty("--accent", config.accent || "#22d3ee");
@@ -54,6 +84,7 @@
       setText("branch", config.branch);
       setText("appName", config.appName);
       setText("change", config.change);
+      renderFlow();
     </script>
   </body>
 </html>

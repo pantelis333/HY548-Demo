@@ -7,5 +7,11 @@ window.SOURCE_DEMO_CONFIG = {
   appName: "github-source-demo",
   change: "baseline",
   accent: "#22d3ee",
-  accentTwo: "#facc15"
+  accentTwo: "#facc15",
+  mode: "baseline",
+  steps: [
+    { label: "GitHub", value: "HY548-Demo", note: "main branch" },
+    { label: "Argo CD", value: "source tile", note: "tracks the repo" },
+    { label: "Kubernetes", value: "1 pod", note: "baseline state" }
+  ]
 };
