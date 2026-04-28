@@ -5,8 +5,9 @@ LOCAL_BIN := $(PROJECT_ROOT)/.demo/bin
 K3D_CLUSTER := argocd-demo
 LOCAL_GIT_CONTAINER := argocd-demo-git
 PORT_FORWARD_PIDS := .demo/argocd-port-forward.pid .demo/color-port-forward.pid .demo/guestbook-port-forward.pid
+ARGOCD_REPO_URL ?= https://github.com/pantelis333/HY548-Demo.git
 
-.PHONY: start stop status check-urls password demo-theme demo-color-pods demo-guestbook-ui-pods demo-guestbook-api-pods demo-guestbook-cache-pods demo-guestbook-redis-pods sync-color sync-guestbook
+.PHONY: start stop status check-urls password stage0 demo1 demo2 demo3 demo-theme demo-color-pods demo-guestbook-ui-pods demo-guestbook-api-pods demo-guestbook-cache-pods demo-guestbook-redis-pods sync-color sync-guestbook
 
 start:
 	@mkdir -p .demo
@@ -16,6 +17,8 @@ start:
 	@sg docker -c 'PATH="$(LOCAL_BIN):$$PATH" k3d cluster start "$(K3D_CLUSTER)"'
 	@sg docker -c 'docker start "$(LOCAL_GIT_CONTAINER)" >/dev/null 2>&1 || true'
 	@kubectl config use-context "k3d-$(K3D_CLUSTER)" >/dev/null
+	@./scripts/use-repo.sh "$(ARGOCD_REPO_URL)" >/dev/null
+	@./scripts/demo-stage.sh stage0
 	@setsid bash -lc 'exec ./scripts/argocd-port-forward.sh' > .demo/argocd-port-forward.log 2>&1 & echo $$! > .demo/argocd-port-forward.pid
 	@setsid bash -lc 'exec kubectl -n color-showcase port-forward --address 0.0.0.0 svc/color-showcase 8081:80' > .demo/color-port-forward.log 2>&1 & echo $$! > .demo/color-port-forward.pid
 	@setsid bash -lc 'exec kubectl -n guestbook-live port-forward --address 0.0.0.0 svc/guestbook-ui 8082:80' > .demo/guestbook-port-forward.log 2>&1 & echo $$! > .demo/guestbook-port-forward.pid
@@ -27,6 +30,7 @@ start:
 
 stop:
 	@test -x "$(LOCAL_BIN)/k3d" || { echo "Missing $(LOCAL_BIN)/k3d. Run ./scripts/setup.sh once first."; exit 1; }
+	@./scripts/demo-stage.sh stage0
 	@for f in $(PORT_FORWARD_PIDS); do if [ -f "$$f" ]; then pid="$$(cat "$$f")"; kill -- "-$$pid" 2>/dev/null || kill "$$pid" 2>/dev/null || true; rm -f "$$f"; fi; done
 	@sg docker -c 'docker stop "$(LOCAL_GIT_CONTAINER)" >/dev/null 2>&1 || true'
 	@sg docker -c 'PATH="$(LOCAL_BIN):$$PATH" k3d cluster stop "$(K3D_CLUSTER)"'
@@ -45,6 +49,18 @@ check-urls:
 
 password:
 	@kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+
+stage0:
+	@./scripts/demo-stage.sh stage0
+
+demo1:
+	@./scripts/demo-stage.sh demo1
+
+demo2:
+	@./scripts/demo-stage.sh demo2
+
+demo3:
+	@./scripts/demo-stage.sh demo3
 
 demo-theme:
 	@test -n "$(THEME)" || { echo "Usage: make demo-theme THEME=aurora|ocean|ember|contrast"; exit 1; }

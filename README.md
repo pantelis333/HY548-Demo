@@ -72,6 +72,27 @@ The browser will warn about the Argo CD certificate because the local install us
 
 ## Best Demo Flow
 
+### Simple Repeatable Flow
+
+For the presentation, use the Makefile flow:
+
+```bash
+make start
+make demo1
+make demo2
+make demo3
+make stop
+```
+
+`make start` puts the GitHub repo and cluster into `stage0`.
+`make stop` restores `stage0` again before stopping, so the next run starts from the same visible state.
+
+Each numbered demo pushes a GitHub commit, syncs Argo CD, and changes something visible:
+
+- `make demo1`: scales `color-showcase` and changes the page.
+- `make demo2`: scales the guestbook UI/API/cache/Redis topology.
+- `make demo3`: applies a final release-style page and balanced pod counts.
+
 ### 1. Show GitOps From Zero
 
 If you want the audience to see the first sync happen live, recreate the cluster with initial sync disabled:

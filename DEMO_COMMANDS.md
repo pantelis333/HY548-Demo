@@ -11,6 +11,7 @@ make start
 ```
 
 `make start` prints the Argo CD password when it finishes.
+It also resets GitHub `main` and the cluster to `stage0`.
 
 ```bash
 make status
@@ -23,6 +24,8 @@ make check-urls
 ```bash
 make stop
 ```
+
+`make stop` pushes and syncs `stage0` before it shuts the demo down. That leaves the repo and pods ready for the same demo flow next time.
 
 ## Turn On
 
@@ -96,9 +99,37 @@ Argo CD password:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
-## Demo Commands
+## Main Demo Flow
 
 Use these after `make start`.
+
+Start from the baseline again:
+
+```bash
+make stage0
+```
+
+Demo 1 scales the color-showcase app and changes the page copy:
+
+```bash
+make demo1
+```
+
+Demo 2 expands the guestbook topology so Argo CD shows more pods:
+
+```bash
+make demo2
+```
+
+Demo 3 creates the final release-style commit:
+
+```bash
+make demo3
+```
+
+Each demo command pushes a GitHub commit, syncs Argo CD, and prints the commit hash. Refresh `http://localhost:8081` after each one.
+
+## Extra Demo Commands
 
 Change the color-showcase theme in Git:
 
@@ -154,10 +185,14 @@ make status
 
 ## Turn Off
 
-Run these one by one. This stops the demo but keeps the cluster and data so you can start it again later.
+Run these one by one. This first restores `stage0`, then stops the demo while keeping the cluster and data so you can start it again later.
 
 ```bash
 cd /mnt/c/Users/pante/Desktop/HY548_ARGOCD_PROJCECT
+```
+
+```bash
+./scripts/demo-stage.sh stage0
 ```
 
 ```bash
