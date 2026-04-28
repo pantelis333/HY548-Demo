@@ -60,7 +60,7 @@ metadata:
     app: redis-follower
     app.kubernetes.io/part-of: guestbook-live
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: redis-follower
