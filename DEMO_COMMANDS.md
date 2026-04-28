@@ -25,7 +25,7 @@ make check-urls
 make stop
 ```
 
-`make stop` pushes and syncs `stage0` before it shuts the demo down. That leaves the repo and pods ready for the same demo flow next time.
+`make stop` pushes and syncs `stage0` before it shuts the demo down. That leaves the repo and pods ready for the same demo flow next time. GitHub history still shows the previous demo commits, but the latest `main` commit is reset to `stage0`.
 
 ## Turn On
 

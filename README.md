@@ -86,6 +86,7 @@ make stop
 
 `make start` puts the GitHub repo and cluster into `stage0`.
 `make stop` restores `stage0` again before stopping, so the next run starts from the same visible state.
+GitHub history still contains the demo commits, but the latest `main` commit returns to `stage0`.
 
 Each numbered demo pushes a GitHub commit, syncs Argo CD, and changes something visible:
 
