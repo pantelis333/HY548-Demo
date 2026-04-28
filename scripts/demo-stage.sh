@@ -207,10 +207,12 @@ restart_port_forward_if_managed() {
   local app="$1"
   local namespace=""
   local service=""
+  local selector=""
   local port=""
   local pid_file=""
   local log_file=""
   local pid=""
+  local pod=""
 
   if [ "$SYNC" != "true" ]; then
     return 0
@@ -220,6 +222,7 @@ restart_port_forward_if_managed() {
     color-showcase)
       namespace="color-showcase"
       service="color-showcase"
+      selector="app.kubernetes.io/name=color-showcase"
       port="8081"
       pid_file="$PROJECT_ROOT/.demo/color-port-forward.pid"
       log_file="$PROJECT_ROOT/.demo/color-port-forward.log"
@@ -227,6 +230,7 @@ restart_port_forward_if_managed() {
     guestbook-live)
       namespace="guestbook-live"
       service="guestbook-ui"
+      selector="app=guestbook-ui"
       port="8082"
       pid_file="$PROJECT_ROOT/.demo/guestbook-port-forward.pid"
       log_file="$PROJECT_ROOT/.demo/guestbook-port-forward.log"
@@ -234,6 +238,7 @@ restart_port_forward_if_managed() {
     github-source-demo)
       namespace="github-source-demo"
       service="github-source-demo"
+      selector="app.kubernetes.io/name=github-source-demo"
       port="8083"
       pid_file="$PROJECT_ROOT/.demo/github-source-port-forward.pid"
       log_file="$PROJECT_ROOT/.demo/github-source-port-forward.log"
@@ -251,7 +256,15 @@ restart_port_forward_if_managed() {
   kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
   rm -f "$pid_file"
 
-  setsid bash -lc "exec kubectl -n ${namespace} port-forward --address 0.0.0.0 svc/${service} ${port}:80" > "$log_file" 2>&1 &
+  pod="$(kubectl -n "$namespace" get pods -l "$selector" --field-selector=status.phase=Running \
+    --sort-by=.metadata.creationTimestamp -o name | tail -n 1 | sed 's#^pod/##')"
+
+  if [ -z "$pod" ]; then
+    echo "No running pod found for ${service} in namespace ${namespace}." >&2
+    return 1
+  fi
+
+  setsid bash -lc "exec kubectl -n ${namespace} port-forward --address 0.0.0.0 pod/${pod} ${port}:80" > "$log_file" 2>&1 &
   echo $! > "$pid_file"
   wait_for_port "$port"
 }
