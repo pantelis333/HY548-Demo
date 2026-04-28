@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Demo 3",
-  release: "release",
-  accent: "#e5e7eb",
-  accentTwo: "#22c55e",
-  accentThree: "#f43f5e",
-  headline: "Demo 3: the release commit is live",
-  message: "This final GitHub commit is a ready-to-present release state: a visible UI change, a new revision in Argo CD, and balanced pod counts.",
-  metricA: "4 color pods",
-  metricB: "6 guestbook UI",
-  metricC: "Release commit",
-  updatedAt: "demo3"
+  themeName: "Stage 0",
+  release: "baseline",
+  accent: "#ff4d8d",
+  accentTwo: "#22d3ee",
+  accentThree: "#facc15",
+  headline: "Stage 0: Git is the source of truth",
+  message: "The cluster is synced to the GitHub repository. This is the clean starting point before the demo changes begin.",
+  metricA: "2 color pods",
+  metricB: "2 guestbook UI",
+  metricC: "GitHub main",
+  updatedAt: "stage0"
 };
