@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Ember",
-  release: "v3.0",
-  accent: "#fb7185",
-  accentTwo: "#f59e0b",
-  accentThree: "#38bdf8",
-  headline: "Sync turns desired state into live state",
-  message: "Click Sync in Argo CD and refresh this page to show the deployment converging from Git to Kubernetes.",
-  metricA: "3 pods",
-  metricB: "Sync pending",
-  metricC: "Rolling update",
-  updatedAt: "2026-04-21T14:34:14Z"
+  themeName: "Stage 0",
+  release: "baseline",
+  accent: "#ff4d8d",
+  accentTwo: "#22d3ee",
+  accentThree: "#facc15",
+  headline: "Stage 0: Git is the source of truth",
+  message: "The cluster is synced to the GitHub repository. This is the clean starting point before the demo changes begin.",
+  metricA: "2 color pods",
+  metricB: "2 guestbook UI",
+  metricC: "GitHub main",
+  updatedAt: "stage0"
 };
