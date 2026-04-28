@@ -8,6 +8,7 @@ resources:
   - deployment.yaml
   - service.yaml
 
+
 configMapGenerator:
   - name: github-source-demo-content
     files:
