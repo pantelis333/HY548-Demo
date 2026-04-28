@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Demo 2",
-  release: "guestbook",
-  accent: "#a78bfa",
-  accentTwo: "#34d399",
-  accentThree: "#fbbf24",
-  headline: "Demo 2: the guestbook topology grew",
-  message: "One commit changed several Kubernetes deployments. The guestbook tree now has more UI, API, cache, and Redis follower pods.",
-  metricA: "8 UI pods",
-  metricB: "3 API + 3 cache",
-  metricC: "3 Redis followers",
-  updatedAt: "demo2"
+  themeName: "Demo 3",
+  release: "release",
+  accent: "#e5e7eb",
+  accentTwo: "#22c55e",
+  accentThree: "#f43f5e",
+  headline: "Demo 3: the release commit is live",
+  message: "This final GitHub commit is a ready-to-present release state: a visible UI change, a new revision in Argo CD, and balanced pod counts.",
+  metricA: "4 color pods",
+  metricB: "6 guestbook UI",
+  metricC: "Release commit",
+  updatedAt: "demo3"
 };
