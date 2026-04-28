@@ -154,6 +154,73 @@ sync_app_if_available() {
   fi
 }
 
+wait_for_port() {
+  local port="$1"
+
+  for _ in $(seq 1 30); do
+    if (: >/dev/tcp/127.0.0.1/"$port") >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  echo "Timed out waiting for port ${port}." >&2
+  return 1
+}
+
+restart_port_forward_if_managed() {
+  local app="$1"
+  local namespace=""
+  local service=""
+  local port=""
+  local pid_file=""
+  local log_file=""
+  local pid=""
+
+  if [ "$SYNC" != "true" ]; then
+    return 0
+  fi
+
+  case "$app" in
+    color-showcase)
+      namespace="color-showcase"
+      service="color-showcase"
+      port="8081"
+      pid_file="$PROJECT_ROOT/.demo/color-port-forward.pid"
+      log_file="$PROJECT_ROOT/.demo/color-port-forward.log"
+      ;;
+    guestbook-live)
+      namespace="guestbook-live"
+      service="guestbook-ui"
+      port="8082"
+      pid_file="$PROJECT_ROOT/.demo/guestbook-port-forward.pid"
+      log_file="$PROJECT_ROOT/.demo/guestbook-port-forward.log"
+      ;;
+    github-source-demo)
+      namespace="github-source-demo"
+      service="github-source-demo"
+      port="8083"
+      pid_file="$PROJECT_ROOT/.demo/github-source-port-forward.pid"
+      log_file="$PROJECT_ROOT/.demo/github-source-port-forward.log"
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+
+  if [ ! -f "$pid_file" ]; then
+    return 0
+  fi
+
+  pid="$(cat "$pid_file")"
+  kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
+  rm -f "$pid_file"
+
+  setsid bash -lc "exec kubectl -n ${namespace} port-forward --address 0.0.0.0 svc/${service} ${port}:80" > "$log_file" 2>&1 &
+  echo $! > "$pid_file"
+  wait_for_port "$port"
+}
+
 publish_and_sync() {
   local message="$1"
   shift
@@ -166,6 +233,9 @@ publish_and_sync() {
   done
   for app in "${apps[@]}"; do
     sync_app_if_available "$app"
+  done
+  for app in "${apps[@]}"; do
+    restart_port_forward_if_managed "$app"
   done
 
   echo
