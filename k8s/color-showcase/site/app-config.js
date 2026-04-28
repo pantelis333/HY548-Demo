@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Demo 1",
-  release: "scale-up",
-  accent: "#2dd4bf",
-  accentTwo: "#60a5fa",
-  accentThree: "#f97316",
-  headline: "Demo 1: a Git commit scaled the app",
-  message: "The desired replica count changed in GitHub. Argo CD synced the commit and Kubernetes created more color-showcase pods.",
-  metricA: "5 color pods",
-  metricB: "Argo synced",
-  metricC: "Replica rollout",
-  updatedAt: "demo1"
+  themeName: "Demo 2",
+  release: "guestbook",
+  accent: "#a78bfa",
+  accentTwo: "#34d399",
+  accentThree: "#fbbf24",
+  headline: "Demo 2: the guestbook topology grew",
+  message: "One commit changed several Kubernetes deployments. The guestbook tree now has more UI, API, cache, and Redis follower pods.",
+  metricA: "8 UI pods",
+  metricB: "3 API + 3 cache",
+  metricC: "3 Redis followers",
+  updatedAt: "demo2"
 };
