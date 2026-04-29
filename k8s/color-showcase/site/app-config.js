@@ -1,13 +1,13 @@
 window.DEMO_CONFIG = {
-  themeName: "Stage 0",
-  release: "baseline",
-  accent: "#ff4d8d",
-  accentTwo: "#22d3ee",
-  accentThree: "#facc15",
-  headline: "Stage 0: Git is the source of truth",
-  message: "The cluster is synced to the GitHub repository. This is the clean starting point before the demo changes begin.",
-  metricA: "2 color pods",
-  metricB: "2 guestbook UI",
-  metricC: "GitHub main",
-  updatedAt: "stage0"
+  themeName: "Demo 1",
+  release: "scale-up",
+  accent: "#2dd4bf",
+  accentTwo: "#60a5fa",
+  accentThree: "#f97316",
+  headline: "Demo 1: a Git commit scaled the app",
+  message: "The desired replica count changed in GitHub. Argo CD synced the commit and Kubernetes created more color-showcase pods.",
+  metricA: "5 color pods",
+  metricB: "Argo synced",
+  metricC: "Replica rollout",
+  updatedAt: "demo1"
 };
